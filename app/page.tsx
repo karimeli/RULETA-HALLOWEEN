@@ -7,7 +7,8 @@ export default function RuletaPage() {
   const configuracionPremios = useMemo(() => [
     '1 dulce', '1 dulce', '1 dulce', '1 dulce', '1 dulce', '1 dulce', // 6 secciones
     '2 dulces', '2 dulces', '2 dulces', '2 dulces',                   // 4 secciones
-    '3 dulces', '3 dulces'                                            // 2 secciones
+    '3 dulces',                                                       // 1 sección
+    '3 monedas'                                                       // 1 sección
   ], []);
 
   const [rotacion, setRotacion] = useState<number>(0);
