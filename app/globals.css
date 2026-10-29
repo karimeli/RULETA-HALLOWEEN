@@ -23,47 +23,49 @@ html, body {
   background: var(--oscuridad);
   user-select: none;
   -webkit-user-select: none;
+  overscroll-behavior: none;
   touch-action: manipulation;
 }
 
 /* 
-  Layout universal adaptable:
-  Funciona en teléfonos compactos (4"), tablets, pantallas plegables, monitores ultrawide
-  y Smart TVs de 32" hasta 85"+ (1080p, 4K, 8K)
+  Contenedor maestro 100% adaptable:
+  - Móviles en vertical (portrait) y horizontal (landscape)
+  - Transmisión por HDMI a Smart TV (1080p, 4K, 8K)
+  - Tablets, laptops y monitores ultrawide
 */
 .pantalla-completa {
   width: 100vw;
   width: 100dvw;
   height: 100vh;
   height: 100dvh;
-  min-height: 100%;
-  background: radial-gradient(circle at center, var(--morado-fondo) 0%, var(--morado-bruja) 50%, var(--oscuridad) 100%);
+  background: radial-gradient(circle at center, var(--morado-fondo) 0%, var(--morado-bruja) 55%, var(--oscuridad) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: white;
   overflow: hidden;
   position: relative;
-  /* Safe area insets para notch de celulares y overscan de Smart TVs */
-  padding-top: max(12px, env(safe-area-inset-top, 12px));
-  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
-  padding-left: max(14px, env(safe-area-inset-left, 14px));
-  padding-right: max(14px, env(safe-area-inset-right, 14px));
+
+  /* Safe Area Insets: protege contra notch de celulares y el recorte de bordes (overscan) de TVs por HDMI */
+  padding-top: max(8px, env(safe-area-inset-top, 8px), 1.5vh);
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 8px), 1.5vh);
+  padding-left: max(12px, env(safe-area-inset-left, 12px), 2vw);
+  padding-right: max(12px, env(safe-area-inset-right, 12px), 2vw);
 }
 
-/* Botón Pantalla Completa autoescalable */
+/* Botón Pantalla Completa: visible y accesible en móvil y TV HDMI */
 .btn-pantalla {
   position: absolute;
-  top: max(10px, env(safe-area-inset-top, 10px), 1.8vmin);
-  right: max(12px, env(safe-area-inset-right, 12px), 2.2vmin);
-  padding: clamp(6px, 1vmin, 14px) clamp(12px, 1.8vmin, 24px);
-  background: rgba(59, 7, 100, 0.8);
+  top: max(8px, env(safe-area-inset-top, 8px), 1.5vh);
+  right: max(12px, env(safe-area-inset-right, 12px), 2vw);
+  padding: clamp(5px, 0.9vh, 12px) clamp(10px, 1.5vw, 22px);
+  background: rgba(59, 7, 100, 0.85);
   color: #fed7aa;
-  border: clamp(1px, 0.2vmin, 2.5px) solid var(--calabaza);
+  border: clamp(1px, 0.2vmin, 2px) solid var(--calabaza);
   border-radius: 9999px;
-  font-size: clamp(11px, 1.6vmin, 20px);
+  font-size: clamp(11px, 1.6vmin, 18px);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -72,14 +74,15 @@ html, body {
   z-index: 100;
   display: flex;
   align-items: center;
-  gap: clamp(4px, 0.8vmin, 10px);
+  gap: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .btn-pantalla:active,
 .btn-pantalla:hover {
   background: var(--calabaza);
   color: #09090b;
-  box-shadow: 0 0 clamp(10px, 2vmin, 25px) var(--calabaza);
+  box-shadow: 0 0 clamp(8px, 1.8vmin, 22px) var(--calabaza);
   transform: scale(1.05);
 }
 
@@ -88,39 +91,40 @@ html, body {
   outline-offset: 3px;
 }
 
-/* Título de Halloween que se escala según el tamaño de la pantalla */
+/* Encabezado: Título con escala fluida y legibilidad alta para TV y móvil */
 .titulo-halloween {
-  font-size: clamp(20px, 5.2vmin, 72px);
+  font-size: clamp(20px, 4.8vh, 64px);
   color: var(--calabaza);
-  text-shadow: 0 0 clamp(8px, 1.5vmin, 24px) rgba(234, 88, 12, 0.9), 0 0 clamp(16px, 3vmin, 48px) rgba(220, 38, 38, 0.7);
-  letter-spacing: clamp(1px, 0.3vmin, 4px);
+  text-shadow: 0 0 clamp(8px, 1.5vmin, 24px) rgba(234, 88, 12, 0.9), 0 0 clamp(16px, 3vmin, 44px) rgba(220, 38, 38, 0.7);
+  letter-spacing: clamp(1px, 0.25vmin, 4px);
   font-weight: 900;
   text-transform: uppercase;
   z-index: 10;
   margin: 0;
   text-align: center;
-  line-height: 1.15;
+  line-height: 1.1;
+  flex-shrink: 0;
 }
 
 /*
   Contenedor de la Ruleta:
-  Usa Container Queries (cqw) para que sus componentes internos (textos, centro, flecha)
-  se calculen estrictamente en función del tamaño de la rueda, garantizando proporción
-  exacta en un celular de 4 pulgadas o en una TV de 85 pulgadas.
+  - En HDMI a TV: aprovecha la altura máxima sin chocar con título o resultado
+  - En Celular Vertical: aprovecha el ancho de la pantalla
+  - En Celular Horizontal (HDMI mirror): se adapta a alturas bajas (ej. 360-400px)
 */
 .ruleta-contenedor {
   container-type: inline-size;
   position: relative;
-  /* Fórmula matemática universal: se ajusta al límite menor de ancho o alto */
-  width: min(84vw, 58vh, 58vmin);
-  height: min(84vw, 58vh, 58vmin);
+  /* Cálculo universal por defecto */
+  width: min(84vw, 64vh, 64vmin);
+  height: min(84vw, 64vh, 64vmin);
   border-radius: 50%;
   border: clamp(4px, 1.6cqw, 16px) solid var(--oscuridad);
-  box-shadow: 0 0 clamp(15px, 6cqw, 50px) rgba(234, 88, 12, 0.65), inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.85);
+  box-shadow: 0 0 clamp(15px, 6cqw, 55px) rgba(234, 88, 12, 0.7), inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.85);
   background: var(--oscuridad);
   cursor: pointer;
   flex-shrink: 0;
-  margin: 0 auto;
+  margin: auto 0;
   touch-action: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -131,25 +135,79 @@ html, body {
 }
 
 .ruleta-contenedor:hover {
-  box-shadow: 0 0 clamp(20px, 8cqw, 65px) rgba(234, 88, 12, 0.85), inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.85);
+  box-shadow: 0 0 clamp(20px, 8cqw, 70px) rgba(234, 88, 12, 0.85), inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.85);
 }
 
-/* Modo Celular en Vertical (Portrait) */
+/* ==========================================
+   ADAPTACIÓN 1: CELULAR EN VERTICAL (Portrait)
+   ========================================== */
 @media (orientation: portrait) {
+  .titulo-halloween {
+    font-size: clamp(22px, 5.5vw, 42px);
+    margin-top: 1vh;
+  }
+
   .ruleta-contenedor {
-    width: min(86vw, 52vh);
-    height: min(86vw, 52vh);
+    width: min(88vw, 52vh);
+    height: min(88vw, 52vh);
+  }
+
+  .area-inferior {
+    min-height: 9vh;
   }
 }
 
-/* Modo Horizontal para celulares apaisados, laptops compactas o pantallas panorámicas */
-@media (orientation: landscape) and (max-height: 550px) {
-  .titulo-halloween {
-    font-size: clamp(16px, 4.2vmin, 28px);
+/* ==============================================================
+   ADAPTACIÓN 2: CELULAR EN HORIZONTAL (Transmisión HDMI a TV 16:9)
+   ============================================================== */
+@media (orientation: landscape) and (max-height: 520px) {
+  .pantalla-completa {
+    padding-top: max(4px, env(safe-area-inset-top, 4px));
+    padding-bottom: max(4px, env(safe-area-inset-bottom, 4px));
   }
+
+  .btn-pantalla {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .titulo-halloween {
+    font-size: clamp(16px, 5vh, 26px);
+  }
+
   .ruleta-contenedor {
-    width: min(62vh, 60vmin);
-    height: min(62vh, 60vmin);
+    width: min(62vh, 48vw);
+    height: min(62vh, 48vw);
+  }
+
+  .area-inferior {
+    min-height: 6vh;
+  }
+
+  .animacion-ectoplasma {
+    font-size: clamp(16px, 5.5vh, 28px);
+  }
+}
+
+/* ==============================================================
+   ADAPTACIÓN 3: SMART TV / MONITOR DIRECTO (1080p, 2K, 4K por HDMI)
+   ============================================================== */
+@media (min-width: 1024px) and (min-height: 600px) {
+  .titulo-halloween {
+    font-size: clamp(32px, 5.5vh, 70px);
+  }
+
+  .ruleta-contenedor {
+    width: min(66vh, 60vw);
+    height: min(66vh, 60vw);
+  }
+
+  .area-inferior {
+    min-height: 10vh;
+  }
+
+  .animacion-ectoplasma {
+    font-size: clamp(28px, 6vh, 64px);
   }
 }
 
@@ -169,7 +227,7 @@ html, body {
   position: relative;
 }
 
-/* Textos de las secciones: escalan proporcionalmente al diámetro de la rueda (cqw) */
+/* Textos de premios calculados en base al diámetro de la rueda (cqw) */
 .seccion-texto {
   position: absolute;
   inset: 0;
@@ -181,8 +239,8 @@ html, body {
 }
 
 .seccion-texto span {
-  margin-top: clamp(14px, 6.8cqw, 48px);
-  font-size: clamp(10px, 3.8cqw, 24px);
+  margin-top: clamp(12px, 6.6cqw, 48px);
+  font-size: clamp(9px, 3.7cqw, 24px);
   font-weight: 800;
   text-transform: uppercase;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.95);
@@ -192,30 +250,30 @@ html, body {
   line-height: 1.1;
 }
 
-/* Puntero triangular sangriento proporcional a la ruleta */
+/* Puntero triangular sangriento */
 .puntero {
   position: absolute;
-  top: clamp(-24px, -4.6cqw, -12px);
+  top: clamp(-22px, -4.6cqw, -10px);
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: clamp(12px, 3.8cqw, 28px) solid transparent;
-  border-right: clamp(12px, 3.8cqw, 28px) solid transparent;
-  border-top: clamp(24px, 8.2cqw, 60px) solid var(--sangre);
+  border-left: clamp(10px, 3.8cqw, 28px) solid transparent;
+  border-right: clamp(10px, 3.8cqw, 28px) solid transparent;
+  border-top: clamp(22px, 8.2cqw, 60px) solid var(--sangre);
   filter: drop-shadow(0 0 clamp(4px, 1.2cqw, 14px) var(--sangre));
   z-index: 15;
   pointer-events: none;
 }
 
-/* Centro tóxico con ojo animado proporcional */
+/* Centro con caldero y ojo parpadeante */
 .centro-ruleta {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(36px, 18cqw, 130px);
-  height: clamp(36px, 18cqw, 130px);
+  width: clamp(34px, 18cqw, 130px);
+  height: clamp(34px, 18cqw, 130px);
   background: var(--oscuridad);
   border: clamp(2px, 0.8cqw, 6px) solid var(--veneno);
   border-radius: 50%;
@@ -237,19 +295,20 @@ html, body {
 
 /* Área inferior con resultado de la tirada */
 .area-inferior {
-  min-height: clamp(36px, 9vmin, 80px);
+  min-height: clamp(32px, 8vh, 85px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
   padding: 0 10px;
+  flex-shrink: 0;
 }
 
 .animacion-ectoplasma {
   color: var(--veneno);
   text-shadow: 0 0 clamp(10px, 1.8vmin, 25px) var(--veneno), 0 0 clamp(20px, 3.5vmin, 45px) rgba(163, 230, 53, 0.6);
   animation: flotarFantasma 2s ease-in-out infinite alternate;
-  font-size: clamp(20px, 6vmin, 60px);
+  font-size: clamp(20px, 5.5vh, 60px);
   font-weight: 900;
   text-transform: uppercase;
   text-align: center;
@@ -273,6 +332,6 @@ html, body {
     transform: translateY(0);
   }
   to {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
 }

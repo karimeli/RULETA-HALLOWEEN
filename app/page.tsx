@@ -86,7 +86,13 @@ export default function RuletaPage() {
   };
 
   return (
-    <main className="pantalla-completa">
+    <main
+      className="pantalla-completa"
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest('.btn-pantalla')) return;
+        girar();
+      }}
+    >
       <button
         onClick={activarPantallaCompleta}
         className="btn-pantalla"
@@ -102,7 +108,10 @@ export default function RuletaPage() {
 
       <div
         className="ruleta-contenedor"
-        onClick={girar}
+        onClick={(e) => {
+          e.stopPropagation();
+          girar();
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
