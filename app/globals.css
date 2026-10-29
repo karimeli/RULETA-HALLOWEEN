@@ -13,81 +13,144 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
-body {
+html, body {
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: var(--oscuridad);
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
-/* Fondo con viñeta y layout vertical balanceado */
+/* 
+  Layout universal adaptable:
+  Funciona en teléfonos compactos (4"), tablets, pantallas plegables, monitores ultrawide
+  y Smart TVs de 32" hasta 85"+ (1080p, 4K, 8K)
+*/
 .pantalla-completa {
   width: 100vw;
+  width: 100dvw;
   height: 100vh;
-  background: radial-gradient(circle at center, var(--morado-fondo) 0%, var(--morado-bruja) 45%, var(--oscuridad) 100%);
+  height: 100dvh;
+  min-height: 100%;
+  background: radial-gradient(circle at center, var(--morado-fondo) 0%, var(--morado-bruja) 50%, var(--oscuridad) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: white;
   overflow: hidden;
   position: relative;
-  padding: 1.5vmin 2vmin;
+  /* Safe area insets para notch de celulares y overscan de Smart TVs */
+  padding-top: max(12px, env(safe-area-inset-top, 12px));
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  padding-left: max(14px, env(safe-area-inset-left, 14px));
+  padding-right: max(14px, env(safe-area-inset-right, 14px));
 }
 
-/* Botón Pantalla Completa estilizado */
+/* Botón Pantalla Completa autoescalable */
 .btn-pantalla {
   position: absolute;
-  top: 2vmin;
-  right: 2.5vmin;
-  padding: 0.8vmin 2vmin;
-  background: rgba(59, 7, 100, 0.7);
+  top: max(10px, env(safe-area-inset-top, 10px), 1.8vmin);
+  right: max(12px, env(safe-area-inset-right, 12px), 2.2vmin);
+  padding: clamp(6px, 1vmin, 14px) clamp(12px, 1.8vmin, 24px);
+  background: rgba(59, 7, 100, 0.8);
   color: #fed7aa;
-  border: 1.5px solid var(--calabaza);
-  border-radius: 8px;
-  font-size: 1.8vmin;
-  font-weight: 600;
+  border: clamp(1px, 0.2vmin, 2.5px) solid var(--calabaza);
+  border-radius: 9999px;
+  font-size: clamp(11px, 1.6vmin, 20px);
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.25s ease;
-  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 100;
-  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 0.8vmin, 10px);
 }
 
+.btn-pantalla:active,
 .btn-pantalla:hover {
   background: var(--calabaza);
   color: #09090b;
-  box-shadow: 0 0 2vmin var(--calabaza);
-  transform: scale(1.04);
+  box-shadow: 0 0 clamp(10px, 2vmin, 25px) var(--calabaza);
+  transform: scale(1.05);
 }
 
-/* Título de Halloween en el flujo del layout (sin taparse) */
+.btn-pantalla:focus-visible {
+  outline: 3px solid var(--veneno);
+  outline-offset: 3px;
+}
+
+/* Título de Halloween que se escala según el tamaño de la pantalla */
 .titulo-halloween {
-  font-size: 5.5vmin;
+  font-size: clamp(20px, 5.2vmin, 72px);
   color: var(--calabaza);
-  text-shadow: 0 0 1.5vmin rgba(234, 88, 12, 0.8), 0 0 3vmin rgba(220, 38, 38, 0.7);
-  letter-spacing: 2px;
+  text-shadow: 0 0 clamp(8px, 1.5vmin, 24px) rgba(234, 88, 12, 0.9), 0 0 clamp(16px, 3vmin, 48px) rgba(220, 38, 38, 0.7);
+  letter-spacing: clamp(1px, 0.3vmin, 4px);
   font-weight: 900;
   text-transform: uppercase;
   z-index: 10;
   margin: 0;
   text-align: center;
+  line-height: 1.15;
 }
 
-/* Contenedor de la ruleta ajustado para no chocar con el título */
+/*
+  Contenedor de la Ruleta:
+  Usa Container Queries (cqw) para que sus componentes internos (textos, centro, flecha)
+  se calculen estrictamente en función del tamaño de la rueda, garantizando proporción
+  exacta en un celular de 4 pulgadas o en una TV de 85 pulgadas.
+*/
 .ruleta-contenedor {
+  container-type: inline-size;
   position: relative;
-  width: 58vmin;
-  height: 58vmin;
+  /* Fórmula matemática universal: se ajusta al límite menor de ancho o alto */
+  width: min(84vw, 58vh, 58vmin);
+  height: min(84vw, 58vh, 58vmin);
   border-radius: 50%;
-  border: 1.2vmin solid var(--oscuridad);
-  box-shadow: 0 0 4vmin rgba(234, 88, 12, 0.6), inset 0 0 2vmin rgba(0, 0, 0, 0.8);
+  border: clamp(4px, 1.6cqw, 16px) solid var(--oscuridad);
+  box-shadow: 0 0 clamp(15px, 6cqw, 50px) rgba(234, 88, 12, 0.65), inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.85);
   background: var(--oscuridad);
   cursor: pointer;
   flex-shrink: 0;
-  margin: 1vmin 0;
+  margin: 0 auto;
+  touch-action: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ruleta-contenedor:focus-visible {
+  outline: 4px solid var(--veneno);
+  outline-offset: 8px;
+}
+
+.ruleta-contenedor:hover {
+  box-shadow: 0 0 clamp(20px, 8cqw, 65px) rgba(234, 88, 12, 0.85), inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.85);
+}
+
+/* Modo Celular en Vertical (Portrait) */
+@media (orientation: portrait) {
+  .ruleta-contenedor {
+    width: min(86vw, 52vh);
+    height: min(86vw, 52vh);
+  }
+}
+
+/* Modo Horizontal para celulares apaisados, laptops compactas o pantallas panorámicas */
+@media (orientation: landscape) and (max-height: 550px) {
+  .titulo-halloween {
+    font-size: clamp(16px, 4.2vmin, 28px);
+  }
+  .ruleta-contenedor {
+    width: min(62vh, 60vmin);
+    height: min(62vh, 60vmin);
+  }
 }
 
 /* La ruleta giratoria */
@@ -95,20 +158,18 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  /* 12 secciones equitativas usando conic-gradient */
   background: conic-gradient(
     #ea580c 0deg 30deg, #2e1065 30deg 60deg, #3f3f46 60deg 90deg,
     #ea580c 90deg 120deg, #2e1065 120deg 150deg, #3f3f46 150deg 180deg,
     #ea580c 180deg 210deg, #2e1065 210deg 240deg, #3f3f46 240deg 270deg,
     #ea580c 270deg 300deg, #2e1065 300deg 330deg, #3f3f46 330deg 360deg
   );
-  /* Transición fluida de 4 segundos */
   transition: transform 4s cubic-bezier(0.15, 0.9, 0.25, 1);
-  box-shadow: inset 0 0 3vmin rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.8);
   position: relative;
 }
 
-/* Posicionamiento circular de los textos */
+/* Textos de las secciones: escalan proporcionalmente al diámetro de la rueda (cqw) */
 .seccion-texto {
   position: absolute;
   inset: 0;
@@ -116,97 +177,82 @@ body {
   justify-content: center;
   align-items: flex-start;
   transform-origin: center;
+  pointer-events: none;
 }
 
 .seccion-texto span {
-  margin-top: 4vmin;
-  font-size: 2.2vmin;
+  margin-top: clamp(14px, 6.8cqw, 48px);
+  font-size: clamp(10px, 3.8cqw, 24px);
   font-weight: 800;
   text-transform: uppercase;
-  text-shadow: 2px 2px 5px black;
-  max-width: 14vmin;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.95);
+  max-width: 25%;
   text-align: center;
   letter-spacing: 0.5px;
+  line-height: 1.1;
 }
 
-/* Puntero sangriento encima de la ruleta */
+/* Puntero triangular sangriento proporcional a la ruleta */
 .puntero {
   position: absolute;
-  top: -2.8vmin;
+  top: clamp(-24px, -4.6cqw, -12px);
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 2.5vmin solid transparent;
-  border-right: 2.5vmin solid transparent;
-  border-top: 5.5vmin solid var(--sangre);
-  filter: drop-shadow(0 0 1.2vmin var(--sangre));
+  border-left: clamp(12px, 3.8cqw, 28px) solid transparent;
+  border-right: clamp(12px, 3.8cqw, 28px) solid transparent;
+  border-top: clamp(24px, 8.2cqw, 60px) solid var(--sangre);
+  filter: drop-shadow(0 0 clamp(4px, 1.2cqw, 14px) var(--sangre));
   z-index: 15;
+  pointer-events: none;
 }
 
-/* Centro estilo caldero tóxico */
+/* Centro tóxico con ojo animado proporcional */
 .centro-ruleta {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 11vmin;
-  height: 11vmin;
+  width: clamp(36px, 18cqw, 130px);
+  height: clamp(36px, 18cqw, 130px);
   background: var(--oscuridad);
-  border: 0.5vmin solid var(--veneno);
+  border: clamp(2px, 0.8cqw, 6px) solid var(--veneno);
   border-radius: 50%;
   z-index: 10;
-  box-shadow: 0 0 2.5vmin rgba(163, 230, 53, 0.6);
+  box-shadow: 0 0 clamp(8px, 3cqw, 25px) rgba(163, 230, 53, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .ojo-rojo {
-  width: 3.8vmin;
-  height: 3.8vmin;
+  width: clamp(12px, 6.2cqw, 46px);
+  height: clamp(12px, 6.2cqw, 46px);
   background: var(--calabaza);
   border-radius: 50%;
   animation: latido 1.5s infinite;
 }
 
-/* Área inferior con resultado o botón de acción */
+/* Área inferior con resultado de la tirada */
 .area-inferior {
-  min-height: 12vmin;
+  min-height: clamp(36px, 9vmin, 80px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  padding: 0 10px;
 }
 
-.mensaje-jugar {
-  font-size: 2.6vmin;
-  color: #fed7aa;
-  background: rgba(46, 16, 101, 0.65);
-  border: 1.5px solid rgba(234, 88, 12, 0.6);
-  padding: 1.2vmin 3.5vmin;
-  border-radius: 40px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  animation: latidoBoton 2s infinite ease-in-out;
+.animacion-ectoplasma {
+  color: var(--veneno);
+  text-shadow: 0 0 clamp(10px, 1.8vmin, 25px) var(--veneno), 0 0 clamp(20px, 3.5vmin, 45px) rgba(163, 230, 53, 0.6);
+  animation: flotarFantasma 2s ease-in-out infinite alternate;
+  font-size: clamp(20px, 6vmin, 60px);
+  font-weight: 900;
+  text-transform: uppercase;
   text-align: center;
-  box-shadow: 0 0 1.5vmin rgba(234, 88, 12, 0.3);
-}
-
-.mensaje-jugar:hover {
-  background: var(--calabaza);
-  color: #09090b;
-  border-color: var(--calabaza-brillante);
-  box-shadow: 0 0 3vmin rgba(234, 88, 12, 0.8);
-  transform: scale(1.05);
-}
-
-.mensaje-girando {
-  font-size: 2.8vmin;
-  color: var(--calabaza-brillante);
-  font-weight: bold;
-  letter-spacing: 1px;
-  animation: latido 1s infinite;
 }
 
 /* Animaciones */
@@ -218,29 +264,8 @@ body {
   50% {
     transform: scale(1.15);
     opacity: 1;
-    box-shadow: 0 0 2vmin var(--calabaza);
+    box-shadow: 0 0 clamp(10px, 2vmin, 25px) var(--calabaza);
   }
-}
-
-@keyframes latidoBoton {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 1vmin rgba(234, 88, 12, 0.3);
-  }
-  50% {
-    transform: scale(1.04);
-    box-shadow: 0 0 2.5vmin rgba(234, 88, 12, 0.7);
-  }
-}
-
-.animacion-ectoplasma {
-  color: var(--veneno);
-  text-shadow: 0 0 2vmin var(--veneno), 0 0 4vmin rgba(163, 230, 53, 0.6);
-  animation: flotarFantasma 2s ease-in-out infinite alternate;
-  font-size: 6.5vmin;
-  font-weight: 900;
-  text-transform: uppercase;
-  text-align: center;
 }
 
 @keyframes flotarFantasma {
@@ -248,6 +273,6 @@ body {
     transform: translateY(0);
   }
   to {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
 }

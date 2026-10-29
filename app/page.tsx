@@ -29,12 +29,11 @@ export default function RuletaPage() {
     setGirando(true);
     setResultado(null);
 
-    const gradosPorSeccion = 360 / 12; // 12 secciones del mismo tamaño (30° cada una)
+    const gradosPorSeccion = 360 / 12; // 12 secciones de 30° cada una
     const vueltasExtra = (Math.floor(Math.random() * 5) + 5) * 360;
     const indiceGanador = Math.floor(Math.random() * 12);
 
     // Alinear el centro de la sección ganadora (+15°) con el puntero superior (0°)
-    // descontando el residuo de la rotación previa para no desfasar giros sucesivos
     const anguloObjetivo = 360 - (indiceGanador * gradosPorSeccion + gradosPorSeccion / 2);
     const rotacionBase = rotacion - (rotacion % 360);
     const nuevaRotacion = rotacionBase + vueltasExtra + anguloObjetivo;
@@ -58,11 +57,30 @@ export default function RuletaPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [girar]);
 
-  const activarPantallaCompleta = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => console.error(err));
-    } else {
-      document.exitFullscreen().catch(err => console.error(err));
+  const activarPantallaCompleta = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        // Al transmitir a TV o en móvil, intentar rotar a horizontal automáticamente si está disponible
+        if ('screen' in window && 'orientation' in screen && 'lock' in (screen.orientation as unknown as Record<string, unknown>)) {
+          try {
+            await (screen.orientation as unknown as { lock: (type: string) => Promise<void> }).lock('landscape');
+          } catch {
+            // No todos los navegadores permiten bloqueo de orientación por política de seguridad
+          }
+        }
+      } else {
+        await document.exitFullscreen();
+        if ('screen' in window && 'orientation' in screen && 'unlock' in (screen.orientation as unknown as Record<string, unknown>)) {
+          try {
+            (screen.orientation as unknown as { unlock: () => void }).unlock();
+          } catch {
+            // Ignorar si no está bloqueado
+          }
+        }
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -72,8 +90,9 @@ export default function RuletaPage() {
         onClick={activarPantallaCompleta}
         className="btn-pantalla"
         title="Pantalla Completa"
+        type="button"
       >
-        ⛶ Pantalla Completa
+        <span>⛶</span> Pantalla Completa
       </button>
 
       <h1 className="titulo-halloween">
@@ -83,7 +102,15 @@ export default function RuletaPage() {
       <div
         className="ruleta-contenedor"
         onClick={girar}
-        title="Haz clic para girar"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            girar();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Girar ruleta"
       >
         <div
           className="ruleta-giro"
@@ -110,18 +137,10 @@ export default function RuletaPage() {
       </div>
 
       <div className="area-inferior">
-        {girando ? (
-          <div className="mensaje-girando">
-            🕷️ Girando la ruleta del terror... 🕷️
-          </div>
-        ) : resultado ? (
+        {resultado && (
           <div className="animacion-ectoplasma" onClick={girar} style={{ cursor: 'pointer' }}>
             ¡Ganaste {resultado}!
           </div>
-        ) : (
-          <button onClick={girar} className="mensaje-jugar">
-            🎃 Haz clic o presiona ESPACIO para girar 🎃
-          </button>
         )}
       </div>
     </main>
