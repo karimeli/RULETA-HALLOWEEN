@@ -1,69 +1,131 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import './globals.css';
+
+export default function RuletaPage() {
+  const configuracionPremios = useMemo(() => [
+    '1 dulce', '1 dulce', '1 dulce', '1 dulce', '1 dulce', '1 dulce', // 6 secciones
+    '2 dulces', '2 dulces', '2 dulces', '2 dulces',                   // 4 secciones
+    '3 dulces',                                                       // 1 sección
+    '3 monedas'                                                       // 1 sección
+  ], []);
+
+  const [monedas, setMonedas] = useState<number>(10);
+  const [rotacion, setRotacion] = useState<number>(0);
+  const [girando, setGirando] = useState<boolean>(false);
+  const [resultado, setResultado] = useState<string | null>(null);
+  const [premios, setPremios] = useState<string[]>(configuracionPremios);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setPremios([...configuracionPremios].sort(() => Math.random() - 0.5));
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [configuracionPremios]);
+
+  const girar = useCallback(() => {
+    if (monedas < 1 || girando || premios.length === 0) return;
+
+    setMonedas(prev => prev - 1); // 1 moneda por giro
+    setGirando(true);
+    setResultado(null);
+
+    const gradosPorSeccion = 360 / 12; // 12 secciones del mismo tamaño (30° cada una)
+    const vueltasExtra = (Math.floor(Math.random() * 5) + 5) * 360;
+    const indiceGanador = Math.floor(Math.random() * 12);
+
+    // Alinear el centro de la sección ganadora (+15°) con el puntero superior (0°)
+    // descontando el residuo de la rotación previa para no desfasar giros sucesivos
+    const anguloObjetivo = 360 - (indiceGanador * gradosPorSeccion + gradosPorSeccion / 2);
+    const rotacionBase = rotacion - (rotacion % 360);
+    const nuevaRotacion = rotacionBase + vueltasExtra + anguloObjetivo;
+    setRotacion(nuevaRotacion);
+
+    timeoutRef.current = setTimeout(() => {
+      setGirando(false);
+      const premioObtenido = premios[indiceGanador];
+      setResultado(premioObtenido);
+
+      if (premioObtenido === '3 monedas') {
+        setMonedas(prev => prev + 3);
+      }
+    }, 4000);
+  }, [monedas, girando, rotacion, premios]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        girar();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [girar]);
+
+  const activarPantallaCompleta = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => console.error(err));
+    } else {
+      document.exitFullscreen().catch(err => console.error(err));
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="pantalla-completa">
+      <button
+        onClick={activarPantallaCompleta}
+        style={{ position: 'absolute', top: '20px', right: '20px', padding: '10px', zIndex: 100, background: '#3b0764', color: 'white', border: '1px solid #ea580c', cursor: 'pointer' }}
+      >
+        Pantalla Completa
+      </button>
+
+      <h1 style={{ position: 'absolute', top: '20px', fontSize: '6vmin', color: '#ea580c', textShadow: '0 0 10px red' }}>
+        Ruleta del Terror
+      </h1>
+
+      <div className="texto-monedas">
+        Monedas: <span style={{ color: '#ea580c' }}>{monedas}</span>
+      </div>
+
+      <div className="ruleta-contenedor">
+        <div
+          className="ruleta-giro"
+          style={{ transform: `rotate(${rotacion}deg)` }}
+        >
+          {premios.map((premio, index) => {
+            const rotacionTexto = index * 30 + 15;
+            return (
+              <div
+                key={index}
+                className="seccion-texto"
+                style={{ transform: `rotate(${rotacionTexto}deg)` }}
+              >
+                <span>{premio}</span>
+              </div>
+            );
+          })}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="puntero" />
+        <div className="centro-ruleta">
+          <div className="ojo-rojo" />
         </div>
-      </main>
+      </div>
+
+      <div style={{ height: '15vmin', marginTop: '5vmin', display: 'flex', alignItems: 'center' }}>
+        {resultado ? (
+          <div className="animacion-ectoplasma" style={{ fontSize: '8vmin', fontWeight: '900', textTransform: 'uppercase' }}>
+            ¡Ganaste {resultado}!
+          </div>
+        ) : (
+          <div style={{ fontSize: '3vmin', color: '#a1a1aa', animation: 'latido 2s infinite' }}>
+            Presiona ESPACIO para jugar
+          </div>
+        )}
+      </div>
     </div>
   );
 }

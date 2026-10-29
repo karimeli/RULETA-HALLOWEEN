@@ -1,26 +1,155 @@
-@import "tailwindcss";
-
+/* globals.css */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --calabaza: #ea580c;
+  --sangre: #dc2626;
+  --veneno: #a3e635;
+  --oscuridad: #09090b;
+  --morado-bruja: #3b0764;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Fondo con viñeta y tamaño ajustado a la pantalla */
+.pantalla-completa {
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle, var(--morado-bruja) 0%, var(--oscuridad) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Escalar usando vmin (viewport minimum) para adaptarse a cualquier TV */
+.ruleta-contenedor {
+  position: relative;
+  width: 70vmin;
+  height: 70vmin;
+  border-radius: 50%;
+  border: 1.5vmin solid var(--oscuridad);
+  box-shadow: 0 0 5vmin rgba(234, 88, 12, 0.6);
+  background: var(--oscuridad);
+}
+
+/* La ruleta giratoria */
+.ruleta-giro {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  /* 12 secciones equitativas usando conic-gradient */
+  background: conic-gradient(#ea580c 0deg 30deg, #2e1065 30deg 60deg, #3f3f46 60deg 90deg,
+      #ea580c 90deg 120deg, #2e1065 120deg 150deg, #3f3f46 150deg 180deg,
+      #ea580c 180deg 210deg, #2e1065 210deg 240deg, #3f3f46 240deg 270deg,
+      #ea580c 270deg 300deg, #2e1065 300deg 330deg, #3f3f46 330deg 360deg);
+  /* Transición fluida de 4 segundos */
+  transition: transform 4s cubic-bezier(0.15, 0.9, 0.25, 1);
+  box-shadow: inset 0 0 3vmin rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+/* Posicionamiento circular de los textos */
+.seccion-texto {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  transform-origin: center;
+}
+
+.seccion-texto span {
+  margin-top: 5vmin;
+  font-size: 2.5vmin;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px black;
+  max-width: 15vmin;
+  text-align: center;
+}
+
+/* Puntero sangriento */
+.puntero {
+  position: absolute;
+  top: -3vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 3vmin solid transparent;
+  border-right: 3vmin solid transparent;
+  border-top: 6vmin solid var(--sangre);
+  filter: drop-shadow(0 0 1vmin var(--sangre));
+  z-index: 10;
+}
+
+/* Centro estilo caldero tóxico */
+.centro-ruleta {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12vmin;
+  height: 12vmin;
+  background: var(--oscuridad);
+  border: 0.5vmin solid var(--veneno);
+  border-radius: 50%;
+  z-index: 10;
+  box-shadow: 0 0 3vmin rgba(163, 230, 53, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ojo-rojo {
+  width: 4vmin;
+  height: 4vmin;
+  background: var(--calabaza);
+  border-radius: 50%;
+  animation: latido 1.5s infinite;
+}
+
+/* Animaciones de Halloween */
+@keyframes latido {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 2vmin var(--calabaza);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animacion-ectoplasma {
+  color: var(--veneno);
+  text-shadow: 0 0 2vmin var(--veneno);
+  animation: flotarFantasma 2s ease-in-out infinite alternate;
+}
+
+@keyframes flotarFantasma {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-15px);
+  }
+}
+
+.texto-monedas {
+  font-size: 5vmin;
+  margin-bottom: 4vmin;
+  z-index: 10;
 }
