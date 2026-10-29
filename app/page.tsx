@@ -5,10 +5,10 @@ import './globals.css';
 
 export default function RuletaPage() {
   const configuracionPremios = useMemo(() => [
-    '1 dulce', '1 dulce', '1 dulce', '1 dulce', '1 dulce', '1 dulce', // 6 secciones
-    '2 dulces', '2 dulces', '2 dulces', '2 dulces',                   // 4 secciones
-    '3 dulces',                                                       // 1 sección
-    '3 monedas'                                                       // 1 sección
+    '1 candy', '1 candy', '1 candy', '1 candy', '1 candy', '1 candy', // 6 sections
+    '2 candies', '2 candies', '2 candies', '2 candies',               // 4 sections
+    '3 candies',                                                       // 1 section
+    '3 coins'                                                         // 1 section
   ], []);
 
   const [rotacion, setRotacion] = useState<number>(0);
@@ -96,14 +96,14 @@ export default function RuletaPage() {
       <button
         onClick={activarPantallaCompleta}
         className="btn-pantalla"
-        title="Pantalla Completa"
+        title="Full Screen"
         type="button"
       >
-        <span>⛶</span> Pantalla Completa
+        <span>⛶</span> Full Screen
       </button>
 
       <h1 className="titulo-halloween">
-        Ruleta del Terror
+        Wheel of Terror
       </h1>
 
       <div
@@ -120,7 +120,7 @@ export default function RuletaPage() {
         }}
         role="button"
         tabIndex={0}
-        aria-label="Girar ruleta"
+        aria-label="Spin wheel"
       >
         <div
           className="ruleta-giro"
@@ -149,7 +149,7 @@ export default function RuletaPage() {
       <div className="area-inferior">
         {resultado && (
           <div className="animacion-ectoplasma" onClick={girar} style={{ cursor: 'pointer' }}>
-            ¡Ganaste {resultado}!
+            You won {resultado}!
           </div>
         )}
       </div>
