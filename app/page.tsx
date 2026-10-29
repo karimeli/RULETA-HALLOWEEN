@@ -7,11 +7,9 @@ export default function RuletaPage() {
   const configuracionPremios = useMemo(() => [
     '1 dulce', '1 dulce', '1 dulce', '1 dulce', '1 dulce', '1 dulce', // 6 secciones
     '2 dulces', '2 dulces', '2 dulces', '2 dulces',                   // 4 secciones
-    '3 dulces',                                                       // 1 sección
-    '3 monedas'                                                       // 1 sección
+    '3 dulces', '3 dulces'                                            // 2 secciones
   ], []);
 
-  const [monedas, setMonedas] = useState<number>(10);
   const [rotacion, setRotacion] = useState<number>(0);
   const [girando, setGirando] = useState<boolean>(false);
   const [resultado, setResultado] = useState<string | null>(null);
@@ -26,9 +24,8 @@ export default function RuletaPage() {
   }, [configuracionPremios]);
 
   const girar = useCallback(() => {
-    if (monedas < 1 || girando || premios.length === 0) return;
+    if (girando || premios.length === 0) return;
 
-    setMonedas(prev => prev - 1); // 1 moneda por giro
     setGirando(true);
     setResultado(null);
 
@@ -47,12 +44,8 @@ export default function RuletaPage() {
       setGirando(false);
       const premioObtenido = premios[indiceGanador];
       setResultado(premioObtenido);
-
-      if (premioObtenido === '3 monedas') {
-        setMonedas(prev => prev + 3);
-      }
     }, 4000);
-  }, [monedas, girando, rotacion, premios]);
+  }, [girando, rotacion, premios]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -74,23 +67,24 @@ export default function RuletaPage() {
   };
 
   return (
-    <div className="pantalla-completa">
+    <main className="pantalla-completa">
       <button
         onClick={activarPantallaCompleta}
-        style={{ position: 'absolute', top: '20px', right: '20px', padding: '10px', zIndex: 100, background: '#3b0764', color: 'white', border: '1px solid #ea580c', cursor: 'pointer' }}
+        className="btn-pantalla"
+        title="Pantalla Completa"
       >
-        Pantalla Completa
+        ⛶ Pantalla Completa
       </button>
 
-      <h1 style={{ position: 'absolute', top: '20px', fontSize: '6vmin', color: '#ea580c', textShadow: '0 0 10px red' }}>
+      <h1 className="titulo-halloween">
         Ruleta del Terror
       </h1>
 
-      <div className="texto-monedas">
-        Monedas: <span style={{ color: '#ea580c' }}>{monedas}</span>
-      </div>
-
-      <div className="ruleta-contenedor">
+      <div
+        className="ruleta-contenedor"
+        onClick={girar}
+        title="Haz clic para girar"
+      >
         <div
           className="ruleta-giro"
           style={{ transform: `rotate(${rotacion}deg)` }}
@@ -115,17 +109,21 @@ export default function RuletaPage() {
         </div>
       </div>
 
-      <div style={{ height: '15vmin', marginTop: '5vmin', display: 'flex', alignItems: 'center' }}>
-        {resultado ? (
-          <div className="animacion-ectoplasma" style={{ fontSize: '8vmin', fontWeight: '900', textTransform: 'uppercase' }}>
+      <div className="area-inferior">
+        {girando ? (
+          <div className="mensaje-girando">
+            🕷️ Girando la ruleta del terror... 🕷️
+          </div>
+        ) : resultado ? (
+          <div className="animacion-ectoplasma" onClick={girar} style={{ cursor: 'pointer' }}>
             ¡Ganaste {resultado}!
           </div>
         ) : (
-          <div style={{ fontSize: '3vmin', color: '#a1a1aa', animation: 'latido 2s infinite' }}>
-            Presiona ESPACIO para jugar
-          </div>
+          <button onClick={girar} className="mensaje-jugar">
+            🎃 Haz clic o presiona ESPACIO para girar 🎃
+          </button>
         )}
       </div>
-    </div>
+    </main>
   );
 }

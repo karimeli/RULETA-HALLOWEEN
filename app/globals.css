@@ -1,10 +1,12 @@
 /* globals.css */
 :root {
   --calabaza: #ea580c;
+  --calabaza-brillante: #fb923c;
   --sangre: #dc2626;
   --veneno: #a3e635;
   --oscuridad: #09090b;
   --morado-bruja: #3b0764;
+  --morado-fondo: #1c052e;
 }
 
 * {
@@ -13,30 +15,79 @@
   padding: 0;
 }
 
-/* Fondo con viñeta y tamaño ajustado a la pantalla */
+body {
+  overflow: hidden;
+  background: var(--oscuridad);
+  user-select: none;
+}
+
+/* Fondo con viñeta y layout vertical balanceado */
 .pantalla-completa {
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(circle, var(--morado-bruja) 0%, var(--oscuridad) 100%);
+  background: radial-gradient(circle at center, var(--morado-fondo) 0%, var(--morado-bruja) 45%, var(--oscuridad) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   font-family: system-ui, -apple-system, sans-serif;
   color: white;
   overflow: hidden;
   position: relative;
+  padding: 1.5vmin 2vmin;
 }
 
-/* Escalar usando vmin (viewport minimum) para adaptarse a cualquier TV */
+/* Botón Pantalla Completa estilizado */
+.btn-pantalla {
+  position: absolute;
+  top: 2vmin;
+  right: 2.5vmin;
+  padding: 0.8vmin 2vmin;
+  background: rgba(59, 7, 100, 0.7);
+  color: #fed7aa;
+  border: 1.5px solid var(--calabaza);
+  border-radius: 8px;
+  font-size: 1.8vmin;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  letter-spacing: 0.5px;
+}
+
+.btn-pantalla:hover {
+  background: var(--calabaza);
+  color: #09090b;
+  box-shadow: 0 0 2vmin var(--calabaza);
+  transform: scale(1.04);
+}
+
+/* Título de Halloween en el flujo del layout (sin taparse) */
+.titulo-halloween {
+  font-size: 5.5vmin;
+  color: var(--calabaza);
+  text-shadow: 0 0 1.5vmin rgba(234, 88, 12, 0.8), 0 0 3vmin rgba(220, 38, 38, 0.7);
+  letter-spacing: 2px;
+  font-weight: 900;
+  text-transform: uppercase;
+  z-index: 10;
+  margin: 0;
+  text-align: center;
+}
+
+/* Contenedor de la ruleta ajustado para no chocar con el título */
 .ruleta-contenedor {
   position: relative;
-  width: 70vmin;
-  height: 70vmin;
+  width: 58vmin;
+  height: 58vmin;
   border-radius: 50%;
-  border: 1.5vmin solid var(--oscuridad);
-  box-shadow: 0 0 5vmin rgba(234, 88, 12, 0.6);
+  border: 1.2vmin solid var(--oscuridad);
+  box-shadow: 0 0 4vmin rgba(234, 88, 12, 0.6), inset 0 0 2vmin rgba(0, 0, 0, 0.8);
   background: var(--oscuridad);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 1vmin 0;
 }
 
 /* La ruleta giratoria */
@@ -45,10 +96,12 @@
   height: 100%;
   border-radius: 50%;
   /* 12 secciones equitativas usando conic-gradient */
-  background: conic-gradient(#ea580c 0deg 30deg, #2e1065 30deg 60deg, #3f3f46 60deg 90deg,
-      #ea580c 90deg 120deg, #2e1065 120deg 150deg, #3f3f46 150deg 180deg,
-      #ea580c 180deg 210deg, #2e1065 210deg 240deg, #3f3f46 240deg 270deg,
-      #ea580c 270deg 300deg, #2e1065 300deg 330deg, #3f3f46 330deg 360deg);
+  background: conic-gradient(
+    #ea580c 0deg 30deg, #2e1065 30deg 60deg, #3f3f46 60deg 90deg,
+    #ea580c 90deg 120deg, #2e1065 120deg 150deg, #3f3f46 150deg 180deg,
+    #ea580c 180deg 210deg, #2e1065 210deg 240deg, #3f3f46 240deg 270deg,
+    #ea580c 270deg 300deg, #2e1065 300deg 330deg, #3f3f46 330deg 360deg
+  );
   /* Transición fluida de 4 segundos */
   transition: transform 4s cubic-bezier(0.15, 0.9, 0.25, 1);
   box-shadow: inset 0 0 3vmin rgba(0, 0, 0, 0.8);
@@ -66,28 +119,29 @@
 }
 
 .seccion-texto span {
-  margin-top: 5vmin;
-  font-size: 2.5vmin;
-  font-weight: bold;
+  margin-top: 4vmin;
+  font-size: 2.2vmin;
+  font-weight: 800;
   text-transform: uppercase;
-  text-shadow: 2px 2px 4px black;
-  max-width: 15vmin;
+  text-shadow: 2px 2px 5px black;
+  max-width: 14vmin;
   text-align: center;
+  letter-spacing: 0.5px;
 }
 
-/* Puntero sangriento */
+/* Puntero sangriento encima de la ruleta */
 .puntero {
   position: absolute;
-  top: -3vmin;
+  top: -2.8vmin;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 3vmin solid transparent;
-  border-right: 3vmin solid transparent;
-  border-top: 6vmin solid var(--sangre);
-  filter: drop-shadow(0 0 1vmin var(--sangre));
-  z-index: 10;
+  border-left: 2.5vmin solid transparent;
+  border-right: 2.5vmin solid transparent;
+  border-top: 5.5vmin solid var(--sangre);
+  filter: drop-shadow(0 0 1.2vmin var(--sangre));
+  z-index: 15;
 }
 
 /* Centro estilo caldero tóxico */
@@ -96,60 +150,104 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 12vmin;
-  height: 12vmin;
+  width: 11vmin;
+  height: 11vmin;
   background: var(--oscuridad);
   border: 0.5vmin solid var(--veneno);
   border-radius: 50%;
   z-index: 10;
-  box-shadow: 0 0 3vmin rgba(163, 230, 53, 0.5);
+  box-shadow: 0 0 2.5vmin rgba(163, 230, 53, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .ojo-rojo {
-  width: 4vmin;
-  height: 4vmin;
+  width: 3.8vmin;
+  height: 3.8vmin;
   background: var(--calabaza);
   border-radius: 50%;
   animation: latido 1.5s infinite;
 }
 
-/* Animaciones de Halloween */
+/* Área inferior con resultado o botón de acción */
+.area-inferior {
+  min-height: 12vmin;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.mensaje-jugar {
+  font-size: 2.6vmin;
+  color: #fed7aa;
+  background: rgba(46, 16, 101, 0.65);
+  border: 1.5px solid rgba(234, 88, 12, 0.6);
+  padding: 1.2vmin 3.5vmin;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  animation: latidoBoton 2s infinite ease-in-out;
+  text-align: center;
+  box-shadow: 0 0 1.5vmin rgba(234, 88, 12, 0.3);
+}
+
+.mensaje-jugar:hover {
+  background: var(--calabaza);
+  color: #09090b;
+  border-color: var(--calabaza-brillante);
+  box-shadow: 0 0 3vmin rgba(234, 88, 12, 0.8);
+  transform: scale(1.05);
+}
+
+.mensaje-girando {
+  font-size: 2.8vmin;
+  color: var(--calabaza-brillante);
+  font-weight: bold;
+  letter-spacing: 1px;
+  animation: latido 1s infinite;
+}
+
+/* Animaciones */
 @keyframes latido {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: scale(1);
-    opacity: 0.8;
+    opacity: 0.85;
   }
-
   50% {
-    transform: scale(1.2);
+    transform: scale(1.15);
     opacity: 1;
     box-shadow: 0 0 2vmin var(--calabaza);
   }
 }
 
+@keyframes latidoBoton {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 1vmin rgba(234, 88, 12, 0.3);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 2.5vmin rgba(234, 88, 12, 0.7);
+  }
+}
+
 .animacion-ectoplasma {
   color: var(--veneno);
-  text-shadow: 0 0 2vmin var(--veneno);
+  text-shadow: 0 0 2vmin var(--veneno), 0 0 4vmin rgba(163, 230, 53, 0.6);
   animation: flotarFantasma 2s ease-in-out infinite alternate;
+  font-size: 6.5vmin;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 @keyframes flotarFantasma {
   from {
     transform: translateY(0);
   }
-
   to {
-    transform: translateY(-15px);
+    transform: translateY(-10px);
   }
-}
-
-.texto-monedas {
-  font-size: 5vmin;
-  margin-bottom: 4vmin;
-  z-index: 10;
 }
