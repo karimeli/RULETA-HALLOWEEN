@@ -1,12 +1,18 @@
-/* globals.css */
+/* globals.css - Wheel of Terror (Halloween Spooky Edition) */
 :root {
   --calabaza: #ea580c;
   --calabaza-brillante: #fb923c;
+  --calabaza-neon: #ff7700;
   --sangre: #dc2626;
+  --sangre-brillante: #ef4444;
   --veneno: #a3e635;
-  --oscuridad: #09090b;
+  --veneno-brillante: #bef264;
+  --oro: #fbbf24;
+  --oro-brillante: #fef08a;
   --morado-bruja: #3b0764;
-  --morado-fondo: #1c052e;
+  --morado-profundo: #1e0533;
+  --morado-fondo: #0a0114;
+  --oscuridad: #060209;
 }
 
 * {
@@ -27,18 +33,15 @@ html, body {
   touch-action: manipulation;
 }
 
-/* 
-  Contenedor maestro 100% adaptable:
-  - Móviles en vertical (portrait) y horizontal (landscape)
-  - Transmisión por HDMI a Smart TV (1080p, 4K, 8K)
-  - Tablets, laptops y monitores ultrawide
-*/
+/* ==============================================================
+   CONTENEDOR MAESTRO 100% RESPONSIVE Y FLUIDO
+   ============================================================== */
 .pantalla-completa {
   width: 100vw;
   width: 100dvw;
   height: 100vh;
   height: 100dvh;
-  background: radial-gradient(circle at center, var(--morado-fondo) 0%, var(--morado-bruja) 55%, var(--oscuridad) 100%);
+  background: radial-gradient(circle at 50% 45%, var(--morado-fondo) 0%, var(--morado-profundo) 45%, var(--oscuridad) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,54 +51,188 @@ html, body {
   overflow: hidden;
   position: relative;
 
-  /* Safe Area Insets: protege contra notch de celulares y el recorte de bordes (overscan) de TVs por HDMI */
-  padding-top: max(8px, env(safe-area-inset-top, 8px), 1.5vh);
-  padding-bottom: max(8px, env(safe-area-inset-bottom, 8px), 1.5vh);
-  padding-left: max(12px, env(safe-area-inset-left, 12px), 2vw);
-  padding-right: max(12px, env(safe-area-inset-right, 12px), 2vw);
+  /* Safe Area Insets contra notch de celulares y overscan de Smart TV HDMI */
+  padding-top: max(8px, env(safe-area-inset-top, 8px), 1dvh);
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 8px), 1.2dvh);
+  padding-left: max(10px, env(safe-area-inset-left, 10px), 2vw);
+  padding-right: max(10px, env(safe-area-inset-right, 10px), 2vw);
 }
 
-/* Botón Pantalla Completa: visible y accesible en móvil y TV HDMI */
-.btn-pantalla {
+/* ==============================================================
+   CAPAS ATMOSFÉRICAS DE FONDO (GPU-ACCELERATED, CERO LAG)
+   ============================================================== */
+.capa-atmosfera {
   position: absolute;
-  top: max(8px, env(safe-area-inset-top, 8px), 1.5vh);
-  right: max(12px, env(safe-area-inset-right, 12px), 2vw);
-  padding: clamp(5px, 0.9vh, 12px) clamp(10px, 1.5vw, 22px);
-  background: rgba(59, 7, 100, 0.85);
-  color: #fed7aa;
-  border: clamp(1px, 0.2vmin, 2px) solid var(--calabaza);
-  border-radius: 9999px;
-  font-size: clamp(11px, 1.6vmin, 18px);
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 100;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+  contain: strict;
+}
+
+/* Resplandor pulsante místico de fondo (GPU transform/opacity only) */
+.aura-mistica {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: min(90vw, 90dvh);
+  height: min(90vw, 90dvh);
+  background: radial-gradient(circle, rgba(163, 230, 53, 0.07) 0%, rgba(234, 88, 12, 0.09) 35%, transparent 68%);
+  border-radius: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  animation: pulsoAura 7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pulsoAura {
+  0% {
+    transform: translate3d(-50%, -50%, 0) scale(0.92);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate3d(-50%, -50%, 0) scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+/* Niebla inferior suave mediante gradiente puro (CERO filtros de blur costosos) */
+.niebla-inferior {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32dvh;
+  background: linear-gradient(to top, rgba(6, 2, 9, 0.95) 0%, rgba(59, 7, 100, 0.35) 45%, rgba(163, 230, 53, 0.05) 75%, transparent 100%);
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+/* Murciélagos animados con aceleración por hardware */
+.murcielago {
+  position: absolute;
+  fill: rgba(22, 7, 34, 0.85);
+  pointer-events: none;
+  animation: vueloMurcielago linear infinite;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+.murcielago-1 {
+  width: clamp(24px, 3.5vw, 42px);
+  top: 10%;
+  left: -50px;
+  animation-duration: 20s;
+  animation-delay: 0.5s;
+}
+
+.murcielago-2 {
+  width: clamp(18px, 2.5vw, 30px);
+  top: 22%;
+  left: -40px;
+  animation-duration: 24s;
+  animation-delay: 8s;
+}
+
+.murcielago-3 {
+  width: clamp(26px, 4vw, 48px);
+  top: 7%;
+  left: -60px;
+  animation-duration: 16s;
+  animation-delay: 13s;
+}
+
+@keyframes vueloMurcielago {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.8) rotate(4deg);
+    opacity: 0;
+  }
+  6% { opacity: 0.75; }
+  25% { transform: translate3d(28vw, 3.5vh, 0) scale(0.9) rotate(-7deg); }
+  50% { transform: translate3d(58vw, -2.5vh, 0) scale(1) rotate(5deg); }
+  75% { transform: translate3d(84vw, 2.5vh, 0) scale(0.95) rotate(-4deg); }
+  94% { opacity: 0.75; }
+  100% {
+    transform: translate3d(112vw, -2vh, 0) scale(0.85) rotate(4deg);
+    opacity: 0;
+  }
+}
+
+/* Telarañas decorativas sutiles en esquinas superiores */
+.telarana {
+  position: absolute;
+  width: clamp(40px, 7vw, 80px);
+  height: clamp(40px, 7vw, 80px);
+  opacity: 0.2;
+  pointer-events: none;
+  fill: #fed7aa;
+}
+.telarana-izq { top: 0; left: 0; }
+.telarana-der { top: 0; right: 0; transform: scaleX(-1); }
+
+/* ==============================================================
+   BARRA SUPERIOR DE ACCIONES (RESPONSIVE)
+   ============================================================== */
+.barra-superior {
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 50;
+  max-width: 1200px;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.btn-control {
+  padding: clamp(6px, 1dvh, 10px) clamp(10px, 1.4vw, 18px);
+  background: rgba(30, 5, 51, 0.85);
+  color: #fed7aa;
+  border: 1.5px solid var(--calabaza);
+  border-radius: 9999px;
+  font-size: clamp(12px, 1.5vmin, 15px);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, border-color 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 }
 
-.btn-pantalla:active,
-.btn-pantalla:hover {
+.btn-control:hover {
   background: var(--calabaza);
-  color: #09090b;
-  box-shadow: 0 0 clamp(8px, 1.8vmin, 22px) var(--calabaza);
-  transform: scale(1.05);
+  color: #07030b;
+  border-color: var(--calabaza-brillante);
+  transform: translate3d(0, -2px, 0) scale(1.04);
 }
 
-.btn-pantalla:focus-visible {
-  outline: 3px solid var(--veneno);
+.btn-control:active {
+  transform: translate3d(0, 1px, 0) scale(0.96);
+}
+
+.btn-control:focus-visible {
+  outline: 2px solid var(--veneno);
   outline-offset: 3px;
 }
 
-/* Encabezado: Título con escala fluida y legibilidad alta para TV y móvil */
+.icono-btn {
+  font-size: 1.15em;
+  line-height: 1;
+}
+
+/* Título con glow cinemático fluido */
 .titulo-halloween {
-  font-size: clamp(20px, 4.8vh, 64px);
-  color: var(--calabaza);
-  text-shadow: 0 0 clamp(8px, 1.5vmin, 24px) rgba(234, 88, 12, 0.9), 0 0 clamp(16px, 3vmin, 44px) rgba(220, 38, 38, 0.7);
+  font-size: clamp(19px, 4.4vw, 48px);
+  color: var(--calabaza-brillante);
+  text-shadow: 
+    0 0 12px rgba(234, 88, 12, 0.85),
+    0 0 28px rgba(220, 38, 38, 0.7),
+    0 2px 4px rgba(0, 0, 0, 0.9);
   letter-spacing: clamp(1px, 0.25vmin, 4px);
   font-weight: 900;
   text-transform: uppercase;
@@ -103,131 +240,118 @@ html, body {
   margin: 0;
   text-align: center;
   line-height: 1.1;
-  flex-shrink: 0;
+  flex: 1;
+  transform: translateZ(0);
+  animation: brilloTitulo 4s ease-in-out infinite alternate;
 }
 
-/*
-  Contenedor de la Ruleta:
-  - En HDMI a TV: aprovecha la altura máxima sin chocar con título o resultado
-  - En Celular Vertical: aprovecha el ancho de la pantalla
-  - En Celular Horizontal (HDMI mirror): se adapta a alturas bajas (ej. 360-400px)
-*/
+@keyframes brilloTitulo {
+  0% {
+    opacity: 0.92;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1.02);
+  }
+}
+
+/* ==============================================================
+   CONTENEDOR DE LA RULETA (FLUIDO, CENTRADO Y SIN DESBORDAMIENTOS)
+   ============================================================== */
 .ruleta-contenedor {
   container-type: inline-size;
   position: relative;
-  /* Cálculo universal por defecto */
-  width: min(84vw, 64vh, 64vmin);
-  height: min(84vw, 64vh, 64vmin);
+  /* El tamaño se calcula con dvh y dvw para encajar perfectamente */
+  width: min(84vw, 47dvh, 520px);
+  height: min(84vw, 47dvh, 520px);
   border-radius: 50%;
-  border: clamp(4px, 1.6cqw, 16px) solid var(--oscuridad);
-  box-shadow: 0 0 clamp(15px, 6cqw, 55px) rgba(234, 88, 12, 0.7), inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.85);
+  border: clamp(5px, 1.8cqw, 14px) solid #1a0826;
+  box-shadow: 
+    0 0 clamp(16px, 6cqw, 55px) rgba(234, 88, 12, 0.7),
+    0 0 clamp(32px, 10cqw, 90px) rgba(59, 7, 100, 0.75),
+    inset 0 0 clamp(10px, 3.5cqw, 30px) rgba(0, 0, 0, 0.9);
   background: var(--oscuridad);
   cursor: pointer;
   flex-shrink: 0;
   margin: auto 0;
   touch-action: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 20;
 }
 
 .ruleta-contenedor:focus-visible {
-  outline: 4px solid var(--veneno);
-  outline-offset: 8px;
+  outline: 3px solid var(--veneno);
+  outline-offset: 6px;
 }
 
 .ruleta-contenedor:hover {
-  box-shadow: 0 0 clamp(20px, 8cqw, 70px) rgba(234, 88, 12, 0.85), inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.85);
+  transform: translate3d(0, 0, 0) scale(1.018);
 }
 
-/* ==========================================
-   ADAPTACIÓN 1: CELULAR EN VERTICAL (Portrait)
-   ========================================== */
-@media (orientation: portrait) {
-  .titulo-halloween {
-    font-size: clamp(22px, 5.5vw, 42px);
-    margin-top: 1vh;
-  }
-
-  .ruleta-contenedor {
-    width: min(88vw, 52vh);
-    height: min(88vw, 52vh);
-  }
-
-  .area-inferior {
-    min-height: 9vh;
-  }
+.ruleta-contenedor:active {
+  transform: translate3d(0, 0, 0) scale(0.985);
 }
 
-/* ==============================================================
-   ADAPTACIÓN 2: CELULAR EN HORIZONTAL (Transmisión HDMI a TV 16:9)
-   ============================================================== */
-@media (orientation: landscape) and (max-height: 520px) {
-  .pantalla-completa {
-    padding-top: max(4px, env(safe-area-inset-top, 4px));
-    padding-bottom: max(4px, env(safe-area-inset-bottom, 4px));
-  }
+/* Aro de tachuelas / pernos brillantes alrededor del aro */
+.aro-pernos {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 12;
+}
 
-  .btn-pantalla {
-    padding: 4px 10px;
-    font-size: 11px;
-  }
-
-  .titulo-halloween {
-    font-size: clamp(16px, 5vh, 26px);
-  }
-
-  .ruleta-contenedor {
-    width: min(62vh, 48vw);
-    height: min(62vh, 48vw);
-  }
-
-  .area-inferior {
-    min-height: 6vh;
-  }
-
-  .animacion-ectoplasma {
-    font-size: clamp(16px, 5.5vh, 28px);
-  }
+.perno {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(6px, 2.2cqw, 15px);
+  height: clamp(6px, 2.2cqw, 15px);
+  margin-top: calc(-1 * clamp(3px, 1.1cqw, 7.5px));
+  margin-left: calc(-1 * clamp(3px, 1.1cqw, 7.5px));
+  border-radius: 50%;
+  background: radial-gradient(circle, #fef08a 20%, #ea580c 70%, #7c2d12 100%);
+  box-shadow: 0 0 clamp(3px, 1.2cqw, 8px) rgba(251, 191, 36, 0.85);
 }
 
 /* ==============================================================
-   ADAPTACIÓN 3: SMART TV / MONITOR DIRECTO (1080p, 2K, 4K por HDMI)
+   DISCO GIRATORIO Y SECCIONES
    ============================================================== */
-@media (min-width: 1024px) and (min-height: 600px) {
-  .titulo-halloween {
-    font-size: clamp(32px, 5.5vh, 70px);
-  }
-
-  .ruleta-contenedor {
-    width: min(66vh, 60vw);
-    height: min(66vh, 60vw);
-  }
-
-  .area-inferior {
-    min-height: 10vh;
-  }
-
-  .animacion-ectoplasma {
-    font-size: clamp(28px, 6vh, 64px);
-  }
-}
-
-/* La ruleta giratoria */
 .ruleta-giro {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   background: conic-gradient(
-    #ea580c 0deg 30deg, #2e1065 30deg 60deg, #3f3f46 60deg 90deg,
-    #ea580c 90deg 120deg, #2e1065 120deg 150deg, #3f3f46 150deg 180deg,
-    #ea580c 180deg 210deg, #2e1065 210deg 240deg, #3f3f46 240deg 270deg,
-    #ea580c 270deg 300deg, #2e1065 300deg 330deg, #3f3f46 330deg 360deg
+    #ea580c 0deg 30deg,   #2e1065 30deg 60deg,   #18181b 60deg 90deg,
+    #dc2626 90deg 120deg, #2e1065 120deg 150deg, #18181b 150deg 180deg,
+    #ea580c 180deg 210deg, #2e1065 210deg 240deg, #18181b 240deg 270deg,
+    #dc2626 270deg 300deg, #2e1065 300deg 330deg, #18181b 330deg 360deg
   );
-  transition: transform 4s cubic-bezier(0.15, 0.9, 0.25, 1);
-  box-shadow: inset 0 0 clamp(10px, 4cqw, 30px) rgba(0, 0, 0, 0.8);
+  /* Curva de desaceleración física natural ultra-fluida */
+  transition: transform 4.5s cubic-bezier(0.16, 0.9, 0.22, 1);
+  box-shadow: inset 0 0 clamp(12px, 4cqw, 32px) rgba(0, 0, 0, 0.85);
   position: relative;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
 }
 
-/* Textos de premios calculados en base al diámetro de la rueda (cqw) */
+/* Divisores metálicos entre las 12 secciones */
+.divisor-seccion {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: clamp(1px, 0.35cqw, 2.5px);
+  height: 50%;
+  background: linear-gradient(to bottom, rgba(251, 191, 36, 0.8) 0%, rgba(251, 146, 60, 0.35) 60%, transparent 100%);
+  transform-origin: bottom center;
+  pointer-events: none;
+}
+
+/* Textos y contenido de cada sección */
 .seccion-texto {
   position: absolute;
   inset: 0;
@@ -238,100 +362,484 @@ html, body {
   pointer-events: none;
 }
 
-.seccion-texto span {
-  margin-top: clamp(12px, 6.6cqw, 48px);
-  font-size: clamp(9px, 3.7cqw, 24px);
-  font-weight: 800;
-  text-transform: uppercase;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.95);
+.seccion-contenido {
+  margin-top: clamp(8px, 6cqw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1px, 0.5cqw, 3px);
   max-width: 25%;
-  text-align: center;
-  letter-spacing: 0.5px;
-  line-height: 1.1;
 }
 
-/* Puntero triangular sangriento */
-.puntero {
+.seccion-icono {
+  font-size: clamp(12px, 4.4cqw, 26px);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.9));
+  line-height: 1;
+}
+
+.seccion-label {
+  font-size: clamp(8px, 3.1cqw, 18px);
+  font-weight: 900;
+  text-transform: uppercase;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 1),
+    0 0 6px rgba(0, 0, 0, 0.9);
+  text-align: center;
+  letter-spacing: 0.4px;
+  line-height: 1.1;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.seccion-jackpot .seccion-label {
+  color: var(--oro-brillante);
+  text-shadow: 
+    0 0 6px rgba(251, 191, 36, 1),
+    0 2px 4px rgba(0, 0, 0, 1);
+}
+
+/* ==============================================================
+   PUNTERO MECÁNICO (FLAPPER FÍSICO ULTRA-RESPONSIVO)
+   ============================================================== */
+.puntero-wrapper {
   position: absolute;
-  top: clamp(-22px, -4.6cqw, -10px);
+  top: clamp(-22px, -5cqw, -11px);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translate3d(0, 0, 0);
+  z-index: 35;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 8px rgba(220, 38, 38, 0.9));
+  transform-origin: 50% 12%;
+  will-change: transform;
+  /* Transición rápida para la deflexión mecánica de cada perno */
+  transition: transform 0.08s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.puntero {
   width: 0;
   height: 0;
-  border-left: clamp(10px, 3.8cqw, 28px) solid transparent;
-  border-right: clamp(10px, 3.8cqw, 28px) solid transparent;
-  border-top: clamp(22px, 8.2cqw, 60px) solid var(--sangre);
-  filter: drop-shadow(0 0 clamp(4px, 1.2cqw, 14px) var(--sangre));
-  z-index: 15;
-  pointer-events: none;
+  border-left: clamp(11px, 4cqw, 28px) solid transparent;
+  border-right: clamp(11px, 4cqw, 28px) solid transparent;
+  border-top: clamp(22px, 8.5cqw, 60px) solid var(--sangre);
+  position: relative;
 }
 
-/* Centro con caldero y ojo parpadeante */
+/* Brillo interno y gema sangrienta del puntero */
+.puntero::after {
+  content: "";
+  position: absolute;
+  top: calc(-1 * clamp(20px, 8cqw, 54px));
+  left: calc(-1 * clamp(5px, 1.7cqw, 12px));
+  width: clamp(10px, 3.4cqw, 24px);
+  height: clamp(11px, 4cqw, 28px);
+  background: radial-gradient(circle, var(--sangre-brillante) 30%, #7f1d1d 90%);
+  border-radius: 50% 50% 60% 60%;
+  box-shadow: 0 0 clamp(5px, 1.8cqw, 12px) var(--sangre-brillante);
+}
+
+/* Rebote de finalización al detenerse la ruleta */
+.puntero-frenado {
+  animation: settleFlapper 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes settleFlapper {
+  0% { transform: translateX(-50%) rotate(-16deg); }
+  35% { transform: translateX(-50%) rotate(7deg); }
+  65% { transform: translateX(-50%) rotate(-3deg); }
+  85% { transform: translateX(-50%) rotate(1deg); }
+  100% { transform: translateX(-50%) rotate(0deg); }
+}
+
+/* ==============================================================
+   CENTRO DE LA RULETA (OJO MONSTRUOSO + BOTÓN SPIN)
+   ============================================================== */
 .centro-ruleta {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: clamp(34px, 18cqw, 130px);
-  height: clamp(34px, 18cqw, 130px);
-  background: var(--oscuridad);
-  border: clamp(2px, 0.8cqw, 6px) solid var(--veneno);
+  transform: translate3d(-50%, -50%, 0);
+  width: clamp(38px, 22cqw, 135px);
+  height: clamp(38px, 22cqw, 135px);
+  background: radial-gradient(circle, #1a0826 30%, #08020d 100%);
+  border: clamp(3px, 1.2cqw, 7px) solid var(--veneno);
   border-radius: 50%;
-  z-index: 10;
-  box-shadow: 0 0 clamp(8px, 3cqw, 25px) rgba(163, 230, 53, 0.65);
+  z-index: 25;
+  box-shadow: 
+    0 0 clamp(8px, 3.5cqw, 26px) rgba(163, 230, 53, 0.65),
+    inset 0 0 clamp(6px, 2.5cqw, 18px) rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease;
 }
 
-.ojo-rojo {
-  width: clamp(12px, 6.2cqw, 46px);
-  height: clamp(12px, 6.2cqw, 46px);
-  background: var(--calabaza);
+.centro-ruleta:hover {
+  transform: translate3d(-50%, -50%, 0) scale(1.08);
+  border-color: var(--calabaza-brillante);
+}
+
+.centro-ruleta:active {
+  transform: translate3d(-50%, -50%, 0) scale(0.95);
+}
+
+/* Ojo monstruo parpadeante */
+.ojo-monstruo {
+  position: relative;
+  width: clamp(24px, 14cqw, 88px);
+  height: clamp(24px, 14cqw, 88px);
   border-radius: 50%;
-  animation: latido 1.5s infinite;
-}
-
-/* Área inferior con resultado de la tirada */
-.area-inferior {
-  min-height: clamp(32px, 8vh, 85px);
+  background: radial-gradient(circle, #f97316 20%, #c2410c 60%, #451a03 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-  padding: 0 10px;
-  flex-shrink: 0;
+  box-shadow: inset 0 0 clamp(4px, 2cqw, 12px) rgba(0, 0, 0, 0.8);
+  animation: latidoOjo 2.6s infinite ease-in-out;
+  overflow: hidden;
 }
 
-.animacion-ectoplasma {
-  color: var(--veneno);
-  text-shadow: 0 0 clamp(10px, 1.8vmin, 25px) var(--veneno), 0 0 clamp(20px, 3.5vmin, 45px) rgba(163, 230, 53, 0.6);
-  animation: flotarFantasma 2s ease-in-out infinite alternate;
-  font-size: clamp(20px, 5.5vh, 60px);
-  font-weight: 900;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-/* Animaciones */
-@keyframes latido {
+@keyframes latidoOjo {
   0%, 100% {
-    transform: scale(1);
-    opacity: 0.85;
+    transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: scale(1.15);
-    opacity: 1;
-    box-shadow: 0 0 clamp(10px, 2vmin, 25px) var(--calabaza);
+    transform: translate3d(0, 0, 0) scale(1.09);
   }
 }
 
-@keyframes flotarFantasma {
-  from {
-    transform: translateY(0);
+/* Pupila que mira alrededor cuando está en reposo */
+.pupila {
+  width: clamp(8px, 4.6cqw, 30px);
+  height: clamp(14px, 8cqw, 54px);
+  background: #000;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.95);
+  animation: mirarAlrededor 4.5s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+@keyframes mirarAlrededor {
+  0%, 100% { transform: translate3d(0, 0, 0) scaleY(1); }
+  25% { transform: translate3d(-18%, -8%, 0) scaleY(1.08); }
+  50% { transform: translate3d(20%, 12%, 0) scaleY(0.92); }
+  75% { transform: translate3d(0, -18%, 0) scaleY(1.15); }
+}
+
+/* Pupila dilatada mientras gira con frenesí */
+.girando-activo .pupila {
+  animation: none;
+  width: clamp(16px, 8.8cqw, 58px);
+  height: clamp(16px, 8.8cqw, 58px);
+  background: radial-gradient(circle, #000 60%, var(--sangre) 100%);
+  box-shadow: 0 0 clamp(8px, 2.5cqw, 20px) var(--sangre);
+}
+
+.girando-activo .ojo-monstruo {
+  animation: latidoFrenetico 0.32s infinite alternate;
+}
+
+@keyframes latidoFrenetico {
+  0% { transform: scale(1.02); filter: brightness(1.1); }
+  100% { transform: scale(1.15); filter: brightness(1.35); }
+}
+
+/* Badge "SPIN!" en el centro */
+.texto-spin-centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(9px, 3.8cqw, 22px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 1), 0 0 8px var(--veneno);
+  pointer-events: none;
+  animation: pulsoSpinBadge 1.6s ease-in-out infinite;
+}
+
+@keyframes pulsoSpinBadge {
+  0%, 100% { transform: scale(0.95); opacity: 0.9; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* ==============================================================
+   ÁREA INFERIOR CON ALTURA RESERVADA ESTABLE (CERO DESPLAZAMIENTOS)
+   ============================================================== */
+.area-inferior {
+  height: clamp(65px, 13dvh, 105px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  padding: 0 10px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Banner de felicitación fluido con rebote elástico */
+.banner-victoria {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 5, 45, 0.93);
+  border: clamp(2px, 0.3vmin, 3px) solid var(--veneno);
+  box-shadow: 
+    0 0 clamp(14px, 2.8vmin, 35px) rgba(163, 230, 53, 0.6),
+    0 6px 25px rgba(0, 0, 0, 0.8);
+  border-radius: clamp(12px, 2.2vmin, 24px);
+  padding: clamp(6px, 1.2dvh, 14px) clamp(14px, 2.8vw, 36px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: popInBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 92vw;
+}
+
+.banner-victoria:hover {
+  transform: translate3d(0, 0, 0) scale(1.04);
+}
+
+.banner-victoria:active {
+  transform: translate3d(0, 0, 0) scale(0.97);
+}
+
+/* Variante especial para JACKPOT (3 coins) */
+.banner-victoria.es-jackpot {
+  border-color: var(--oro-brillante);
+  background: rgba(45, 20, 5, 0.95);
+  box-shadow: 
+    0 0 clamp(18px, 3.5vmin, 50px) rgba(251, 191, 36, 0.8),
+    0 6px 28px rgba(0, 0, 0, 0.85);
+  animation: popInBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), pulsoDorado 2s infinite alternate;
+}
+
+@keyframes pulsoDorado {
+  0% { border-color: var(--oro); }
+  100% { border-color: #fff; }
+}
+
+@keyframes popInBounce {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.65);
   }
-  to {
-    transform: translateY(-6px);
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.etiqueta-resultado {
+  font-size: clamp(9px, 1.6vmin, 15px);
+  font-weight: 800;
+  letter-spacing: clamp(1px, 0.25vmin, 2.5px);
+  color: #fed7aa;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.es-jackpot .etiqueta-resultado {
+  color: var(--oro-brillante);
+}
+
+.premio-principal {
+  font-size: clamp(18px, 3.8dvh, 44px);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--veneno);
+  text-shadow: 
+    0 0 clamp(8px, 1.8vmin, 20px) var(--veneno),
+    0 0 clamp(16px, 3vmin, 38px) rgba(163, 230, 53, 0.5);
+  letter-spacing: 0.8px;
+  line-height: 1.1;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1.2vw, 14px);
+}
+
+.es-jackpot .premio-principal {
+  color: #fff;
+  text-shadow: 
+    0 0 clamp(8px, 1.8vmin, 22px) var(--oro-brillante),
+    0 0 clamp(20px, 3.8vmin, 50px) var(--oro);
+}
+
+.icono-victoria-animado {
+  display: inline-block;
+  animation: saltitoIcono 1.1s ease-in-out infinite;
+  font-size: 1.1em;
+}
+
+@keyframes saltitoIcono {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  35% { transform: translate3d(0, -6px, 0) rotate(-8deg) scale(1.12); }
+  65% { transform: translate3d(0, -3px, 0) rotate(8deg) scale(1.08); }
+}
+
+.indicador-jugar-nuevo {
+  font-size: clamp(9px, 1.4vmin, 14px);
+  color: #fed7aa;
+  margin-top: clamp(2px, 0.4dvh, 5px);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.85;
+}
+
+/* Indicador de ayuda inicial */
+.texto-guia-inicio {
+  font-size: clamp(12px, 2.2vmin, 18px);
+  color: #fed7aa;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  background: rgba(30, 5, 51, 0.65);
+  border: 1px solid rgba(234, 88, 12, 0.4);
+  padding: clamp(6px, 0.9dvh, 10px) clamp(14px, 2.5vw, 26px);
+  border-radius: 9999px;
+  animation: guiaFlotante 2.2s ease-in-out infinite alternate;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes guiaFlotante {
+  0% { transform: translate3d(0, 0, 0); opacity: 0.8; }
+  100% { transform: translate3d(0, -4px, 0); opacity: 1; }
+}
+
+/* ==============================================================
+   CANVAS DE PARTÍCULAS / CONFETI DE HALLOWEEN
+   ============================================================== */
+.canvas-particulas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ==============================================================
+   ADAPTACIONES RESPONSIVAS (MÓVIL, HORIZONTAL, SMART TV HDMI)
+   ============================================================== */
+
+/* 1. MÓVIL VERTICAL ESTRECHO (Portrait) */
+@media (max-width: 480px) and (orientation: portrait) {
+  .barra-superior {
+    gap: 4px;
+  }
+
+  .btn-control .texto-btn {
+    display: none; /* En pantallas pequeñas mostramos solo los iconos */
+  }
+
+  .btn-control {
+    padding: 7px 11px;
+    border-radius: 50%;
+  }
+
+  .titulo-halloween {
+    font-size: clamp(18px, 5.4vw, 28px);
+  }
+
+  .ruleta-contenedor {
+    width: min(86vw, 46dvh);
+    height: min(86vw, 46dvh);
+  }
+
+  .area-inferior {
+    height: clamp(60px, 12dvh, 90px);
+  }
+
+  .premio-principal {
+    font-size: clamp(16px, 3.4dvh, 26px);
+  }
+}
+
+/* 2. PANTALLAS HORIZONTALES / LANDSCAPE CON ALTURA REDUCIDA (Smartphones y HDMI TV) */
+@media (orientation: landscape) and (max-height: 540px) {
+  .pantalla-completa {
+    padding-top: max(4px, env(safe-area-inset-top, 4px));
+    padding-bottom: max(4px, env(safe-area-inset-bottom, 4px));
+    justify-content: space-between;
+  }
+
+  .barra-superior {
+    padding: 0 6px;
+  }
+
+  .btn-control {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .titulo-halloween {
+    font-size: clamp(15px, 4.4dvh, 24px);
+  }
+
+  .ruleta-contenedor {
+    width: min(68dvh, 44vw);
+    height: min(68dvh, 44vw);
+    margin: 1px 0;
+  }
+
+  .area-inferior {
+    height: clamp(48px, 12dvh, 68px);
+  }
+
+  .banner-victoria {
+    padding: 4px 16px;
+    border-radius: 12px;
+  }
+
+  .premio-principal {
+    font-size: clamp(14px, 4.2dvh, 22px);
+  }
+
+  .etiqueta-resultado {
+    font-size: 9px;
+  }
+}
+
+/* 3. PANTALLAS GRANDES Y SMART TV DIRECTO HDMI (1080p, 2K, 4K) */
+@media (min-width: 1024px) and (min-height: 600px) {
+  .titulo-halloween {
+    font-size: clamp(32px, 5.2dvh, 64px);
+  }
+
+  .ruleta-contenedor {
+    width: min(58dvh, 52vw, 620px);
+    height: min(58dvh, 52vw, 620px);
+  }
+
+  .area-inferior {
+    height: clamp(85px, 14dvh, 130px);
+  }
+
+  .premio-principal {
+    font-size: clamp(26px, 5.2dvh, 54px);
+  }
+}
+
+/* ==============================================================
+   ACCESIBILIDAD: PREFERS-REDUCED-MOTION
+   ============================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .murcielago,
+  .niebla-inferior,
+  .aura-mistica,
+  .ojo-monstruo,
+  .pupila,
+  .titulo-halloween {
+    animation: none !important;
+  }
+  .ruleta-giro {
+    transition-duration: 1.5s !important;
   }
 }
